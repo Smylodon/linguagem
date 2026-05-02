@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estudos — Linguagem, Sujeito e Tecnologia</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f10;
+    --surface: #1a1a1c;
+    --surface2: #242426;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0efe8;
+    --muted: #888884;
+    --accent: #c8f060;
+    --accent-dim: rgba(200,240,96,0.12);
+    --accent-dim2: rgba(200,240,96,0.06);
+    --green: #3db87a;
+    --green-dim: rgba(61,184,122,0.12);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.1);
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.1);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ====== SETUP SCREEN ====== */
+  #setup-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .setup-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 560px;
+    width: 100%;
+    box-shadow: 0 0 80px rgba(200,240,96,0.04);
+  }
+
+  .setup-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .setup-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 5vw, 30px);
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .setup-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .setup-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .setup-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Mode selector */
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 1.75rem;
+  }
+
+  .mode-card {
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .mode-card:hover { border-color: rgba(200,240,96,0.3); background: var(--accent-dim2); }
+
+  .mode-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .mode-card .mode-icon { font-size: 22px; display: block; margin-bottom: 6px; }
+  .mode-card .mode-name { font-size: 13px; font-weight: 500; display: block; }
+  .mode-card .mode-desc { font-size: 11px; color: var(--muted); display: block; margin-top: 3px; }
+  .mode-card.selected .mode-desc { color: var(--accent); opacity: 0.7; }
+
+  /* Theme selector */
+  #theme-selector {
+    display: none;
+    margin-bottom: 1.75rem;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .theme-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .theme-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+
+  .theme-btn:hover { border-color: rgba(200,240,96,0.3); background: var(--accent-dim2); }
+
+  .theme-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .theme-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--muted);
+    transition: background 0.15s;
+  }
+  .theme-btn.selected .theme-dot { background: var(--accent); }
+
+  .theme-count {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .theme-btn.selected .theme-count { background: rgba(200,240,96,0.2); color: var(--accent); }
+
+  /* Quantity selector */
+  .qty-wrap { margin-bottom: 2rem; }
+
+  .qty-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .qty-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .qty-btn:hover { border-color: rgba(200,240,96,0.3); background: var(--accent-dim2); }
+
+  .qty-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .qty-all {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .qty-all:hover { border-color: rgba(200,240,96,0.3); color: var(--text); }
+  .qty-all.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
+
+  .btn-start {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #0f0f10;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: none;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-start:hover { background: #d4f570; transform: translateY(-1px); }
+  .btn-start:disabled { background: var(--surface2); color: var(--muted); transform: none; cursor: not-allowed; }
+
+  .setup-stats {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    background: var(--accent-dim2);
+    border: 1px solid rgba(200,240,96,0.12);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ====== QUIZ LAYOUT ====== */
+  #quiz-screen { display: none; }
+
+  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+
+  .sidebar-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sidebar-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .sidebar-mode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--accent-dim2);
+    border: 1px solid rgba(200,240,96,0.15);
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .progress-wrap { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+
+  .prog-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .prog-bar {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .prog-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .q-list { flex: 1; padding: 0.5rem; overflow-y: auto; }
+
+  .q-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 2px;
+  }
+
+  .q-item:hover { background: var(--surface2); }
+  .q-item.active { background: var(--accent-dim2); border: 1px solid rgba(200,240,96,0.15); }
+
+  .q-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .q-item.active .q-num { background: var(--accent); color: #0f0f10; }
+  .q-item.done .q-num { background: var(--green); color: #fff; }
+
+  .q-label {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .q-item.active .q-label { color: var(--text); }
+  .q-item.done .q-label { color: var(--green); }
+
+  .btn-restart {
+    margin: 0.75rem;
+    padding: 9px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: calc(100% - 1.5rem);
+  }
+
+  .btn-restart:hover { background: var(--surface2); color: var(--text); }
+
+  /* Main */
+  .main { padding: 2.5rem; max-width: 760px; }
+
+  .category-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid rgba(200,240,96,0.2);
+    margin-bottom: 1.25rem;
+  }
+
+  .question-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .question-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(18px, 3vw, 22px);
+    line-height: 1.4;
+    color: var(--text);
+    margin-bottom: 1.75rem;
+  }
+
+  .answer-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    resize: vertical;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  textarea:focus { outline: none; border-color: rgba(200,240,96,0.3); }
+  textarea::placeholder { color: var(--muted); }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; align-items: center; }
+
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .btn:hover { background: var(--surface2); color: var(--text); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0f0f10;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .btn-primary:hover { background: #d4f570; }
+  .btn-primary:disabled { background: var(--surface2); color: var(--muted); border-color: var(--border); }
+
+  .loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1.25rem;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .dots { display: flex; gap: 4px; }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+  .feedback {
+    display: none;
+    margin-top: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .feedback-header {
+    padding: 12px 16px;
+    background: var(--green-dim);
+    border-bottom: 1px solid rgba(61,184,122,0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .feedback-icon {
+    width: 16px; height: 16px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .feedback-body {
+    padding: 1.25rem 1.5rem;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  .nav-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .nav-info { flex: 1; font-size: 12px; color: var(--muted); min-width: 100px; }
+
+  .btn-teach {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border-color: rgba(245,158,11,0.25);
+  }
+  .btn-teach:hover { background: rgba(245,158,11,0.18); color: var(--amber); }
+
+  .teaching {
+    display: none;
+    margin-top: 1.5rem;
+    background: var(--surface);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .teaching-header {
+    padding: 12px 16px;
+    background: var(--amber-dim);
+    border-bottom: 1px solid rgba(245,158,11,0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  .teaching-body {
+    padding: 1.25rem 1.5rem;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  .after-teach-banner {
+    display: none;
+    margin-top: 1rem;
+    padding: 12px 16px;
+    background: var(--accent-dim2);
+    border: 1px solid rgba(200,240,96,0.15);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  /* Mobile hamburger */
+  .mobile-header {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 1rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .mobile-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .mobile-prog {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .ham-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .ham-btn span {
+    width: 16px; height: 2px;
+    border-radius: 1px;
+    background: var(--muted);
+    display: block;
+    transition: all 0.2s;
+  }
+
+  .ham-btn.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); background: var(--text); }
+  .ham-btn.open span:nth-child(2) { opacity: 0; }
+  .ham-btn.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); background: var(--text); }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 40;
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-overlay.open { display: block; }
+
+  /* Completion screen */
+  .completion {
+    display: none;
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .completion-icon { font-size: 56px; margin-bottom: 1rem; }
+
+  .completion-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .completion-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+
+    .sidebar {
+      display: none;
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 280px;
+      z-index: 45;
+      height: 100%;
+    }
+
+    .sidebar.mobile-open { display: flex; }
+
+    .mobile-header { display: flex; }
+
+    .main {
+      padding: 1.25rem 1rem;
+      max-width: 100%;
+    }
+
+    .question-text { font-size: 18px; }
+
+    .mode-grid { grid-template-columns: 1fr; }
+
+    .setup-card { padding: 1.75rem 1.25rem; }
+
+    .btn-row { gap: 6px; }
+    .btn { padding: 9px 14px; font-size: 12px; }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .layout { grid-template-columns: 220px 1fr; }
+    .main { padding: 2rem 1.75rem; }
+  }
+
+  @media (min-width: 769px) {
+    .mobile-header { display: none !important; }
+    .sidebar { display: flex !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== SETUP SCREEN ====== -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <div class="setup-logo">UTFPR — Francisco Beltrão · HLA001</div>
+    <div class="setup-title">Linguagem, Sujeito<br>e Tecnologia</div>
+    <div class="setup-sub">Profa. Larissa Rizzi Varela · Configure sua sessão de estudo</div>
+
+    <div class="setup-stats">
+      <span class="stat-chip">40 questões no total</span>
+      <span class="stat-chip">4 temas</span>
+      <span class="stat-chip">IA integrada</span>
+    </div>
+
+    <!-- Modo -->
+    <div class="setup-section-label">Modo de estudo</div>
+    <div class="mode-grid">
+      <button class="mode-card selected" onclick="setMode('aleatorio')" id="mode-aleatorio">
+        <span class="mode-icon">🎲</span>
+        <span class="mode-name">Aleatório</span>
+        <span class="mode-desc">Mistura todos os temas</span>
+      </button>
+      <button class="mode-card" onclick="setMode('tema')" id="mode-tema">
+        <span class="mode-icon">🎯</span>
+        <span class="mode-name">Por tema</span>
+        <span class="mode-desc">Escolha um tema</span>
+      </button>
+      <button class="mode-card" onclick="setMode('todos')" id="mode-todos">
+        <span class="mode-icon">📚</span>
+        <span class="mode-name">Todos</span>
+        <span class="mode-desc">Na ordem original</span>
+      </button>
+    </div>
+
+    <!-- Tema selector (só aparece em modo tema) -->
+    <div id="theme-selector">
+      <div class="setup-section-label">Escolha o tema</div>
+      <div class="theme-grid" id="theme-grid"></div>
+    </div>
+
+    <!-- Quantidade -->
+    <div class="qty-wrap">
+      <div class="setup-section-label">Quantidade de questões</div>
+      <div class="qty-grid" id="qty-grid">
+        <button class="qty-btn selected" onclick="setQty(5)" id="qty-5">5</button>
+        <button class="qty-btn" onclick="setQty(10)" id="qty-10">10</button>
+        <button class="qty-btn" onclick="setQty(15)" id="qty-15">15</button>
+        <button class="qty-btn" onclick="setQty(20)" id="qty-20">20</button>
+        <button class="qty-all" onclick="setQty('all')" id="qty-all">Todas</button>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startQuiz()" id="btn-start">
+      Começar estudo →
+    </button>
+  </div>
+</div>
+
+<!-- ====== QUIZ SCREEN ====== -->
+<div id="quiz-screen">
+  <!-- Mobile header -->
+  <div class="mobile-header">
+    <button class="ham-btn" id="ham-btn" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-title" id="mobile-q-info">Questão 1</div>
+    <div class="mobile-prog" id="mobile-prog">0/0</div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">UTFPR — Francisco Beltrão</div>
+        <div class="sidebar-title">Linguagem, Sujeito e Tecnologia</div>
+        <div class="sidebar-sub">HLA001 · Profa. Larissa Rizzi Varela</div>
+        <div class="sidebar-mode-badge" id="sidebar-mode-badge">🎲 Aleatório</div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="prog-label">
+          <span>Progresso</span>
+          <span id="prog-count">0 / 0</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="q-list" id="q-list"></div>
+
+      <button class="btn-restart" onclick="goSetup()">← Nova configuração</button>
+    </aside>
+
+    <main class="main" id="main-content">
+      <div class="category-tag" id="q-tag">—</div>
+      <div class="question-num" id="q-num">Questão 1</div>
+      <div class="question-text" id="q-text"></div>
+
+      <div class="answer-label">Sua resposta</div>
+      <textarea id="q-answer" placeholder="Escreva sua resposta aqui..."></textarea>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-corrigir" onclick="corrigir()">Corrigir com IA</button>
+        <button class="btn btn-teach" id="btn-teach" onclick="ensinar()">Não sei, me ensine!</button>
+        <button class="btn" onclick="pular()">Pular →</button>
+      </div>
+
+      <div class="loading" id="loading-div">
+        <div class="dots">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+        <span id="loading-msg">Analisando sua resposta...</span>
+      </div>
+
+      <div class="teaching" id="teaching-div">
+        <div class="teaching-header">💡 Explicação do Professor IA</div>
+        <div class="teaching-body" id="teaching-text"></div>
+      </div>
+
+      <div class="after-teach-banner" id="after-teach-banner">
+        ✨ Agora que você aprendeu, escreva sua resposta acima e clique em <strong>Corrigir com IA</strong>.
+      </div>
+
+      <div class="feedback" id="feedback-div">
+        <div class="feedback-header">
+          <div class="feedback-icon">✓</div>
+          Correção da IA
+        </div>
+        <div class="feedback-body" id="feedback-text"></div>
+      </div>
+
+      <div class="nav-bottom">
+        <button class="btn" onclick="navQ(-1)">← Anterior</button>
+        <button class="btn" onclick="navQ(1)">Próxima →</button>
+        <div class="nav-info" id="nav-info"></div>
+      </div>
+
+      <!-- Completion -->
+      <div class="completion" id="completion-div">
+        <div class="completion-icon">🎉</div>
+        <div class="completion-title">Sessão concluída!</div>
+        <div class="completion-sub" id="completion-sub">Você respondeu todas as questões desta sessão.</div>
+        <button class="btn-start" style="max-width:280px;margin:0 auto;" onclick="goSetup()">← Nova sessão</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+const GROQ_KEY = "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";
+const MODEL = "llama-3.3-70b-versatile";
+
+// ====== ALL 50 QUESTIONS ======
+const ALL_QUESTIONS = [
+  // ─── LINGUAGEM — CHAUÍ (10 questões) ───
+  {tag:"Linguagem — Chauí", q:"O que é linguagem segundo Marilena Chauí? Apresente a definição e explique suas principais funções: indicativa, comunicativa, expressiva e conotativa."},
+  {tag:"Linguagem — Chauí", q:"Explique a diferença entre a função denotativa e a função conotativa da linguagem. Dê um exemplo de como a mesma palavra pode ter sentidos completamente diferentes dependendo do contexto de uso."},
+  {tag:"Linguagem — Chauí", q:"O que é o positivismo lógico e qual era seu objetivo em relação à linguagem? Por que os positivistas lógicos viam a função conotativa como um 'problema' a ser eliminado?"},
+  {tag:"Linguagem — Chauí", q:"Qual é a diferença entre as concepções empirista e intelectualista da linguagem? Em que ponto central as duas correntes filosóficas concordam?"},
+  {tag:"Linguagem — Chauí", q:"A palavra 'provável' gera interpretações diferentes entre um chatbot e um usuário humano. O que esse exemplo revela sobre a linguagem? Use os conceitos de denotação e conotação de Chauí para justificar sua resposta."},
+  {tag:"Linguagem — Chauí", q:"O caso do chatbot tentando tornar a linguagem mais precisa se relaciona com o positivismo lógico. Explique essa relação e por que a linguagem puramente denotativa apresenta limitações profundas na comunicação entre humanos."},
+  {tag:"Linguagem — Chauí", q:"Para Chauí, o que significa dizer que a linguagem é uma 'instituição social'? Como isso contraria a ideia de que a linguagem seria apenas um código neutro de transmissão de informações?"},
+  {tag:"Linguagem — Chauí", q:"Explique o conceito de 'signo linguístico' e a distinção entre significante e significado. Por que, segundo Chauí, essa relação é arbitrária e ao mesmo tempo social?"},
+  {tag:"Linguagem — Chauí", q:"Como Chauí relaciona linguagem e pensamento? Por que não é possível separar completamente os dois? Dê um exemplo concreto que ilustre essa interdependência."},
+  {tag:"Linguagem — Chauí", q:"O que Chauí entende por 'equivocidade' da linguagem? Por que a ambiguidade não é um defeito da língua, mas sim uma característica constitutiva e necessária da comunicação humana?"},
+
+  // ─── DISCURSO E IDEOLOGIA (10 questões) ───
+  {tag:"Discurso e Ideologia", q:"O que é discurso segundo os autores estudados (Possenti, Brandão, Sodré)? Por que todo discurso é considerado 'situado'? Explique o que isso significa."},
+  {tag:"Discurso e Ideologia", q:"O que é ideologia para a Análise do Discurso (com base em Marx e Althusser)? Como ela se relaciona com a noção de 'alienação' descrita por Chauí?"},
+  {tag:"Discurso e Ideologia", q:"Quais são as três características da ideologia segundo Althusser? Explique cada uma delas com suas próprias palavras."},
+  {tag:"Discurso e Ideologia", q:"O que são os Aparelhos Ideológicos de Estado (AIE)? Liste os oito AIE enumerados por Althusser e explique como eles funcionam para manter a ideologia dominante na sociedade."},
+  {tag:"Discurso e Ideologia", q:"Explique o 'efeito ideológico elementar' de Althusser com um exemplo concreto do cotidiano das redes sociais como Instagram ou TikTok."},
+  {tag:"Discurso e Ideologia", q:"O que é 'polimorfismo do sentido' conforme estudado na disciplina? Como a mesma palavra 'protesto' pode gerar discursos completamente diferentes dependendo do lugar social de quem fala?"},
+  {tag:"Discurso e Ideologia", q:"O que Possenti entende por 'sujeito do discurso'? Por que o sujeito não é totalmente livre nem totalmente determinado ao produzir um enunciado?"},
+  {tag:"Discurso e Ideologia", q:"Explique o conceito de 'formação discursiva' de acordo com Brandão. Como diferentes formações discursivas produzem sentidos opostos para o mesmo evento histórico?"},
+  {tag:"Discurso e Ideologia", q:"Como a Análise do Discurso francesa (AD) difere da Linguística tradicional em sua abordagem da linguagem? O que a AD considera que a Linguística ignora?"},
+  {tag:"Discurso e Ideologia", q:"O que é 'interdiscurso' ou 'memória discursiva'? Como textos e discursos do passado influenciam o sentido dos discursos presentes? Dê um exemplo de uso de interdiscurso em um meme ou post viral."},
+
+  // ─── SODRÉ — SOCIEDADE INCIVIL (10 questões) ───
+  {tag:"Sodré — Sociedade Incivil", q:"Para Muniz Sodré, o que é fala? O que diferencia fala de diálogo? Por que o diálogo é considerado um ato político?"},
+  {tag:"Sodré — Sociedade Incivil", q:"O que é discurso para Sodré? Como o discurso se diferencia de uma simples troca automática de palavras?"},
+  {tag:"Sodré — Sociedade Incivil", q:"Por que, segundo Sodré, a programação computacional reduziu a fala e a escrita ao nível automático? O que se perde nesse processo?"},
+  {tag:"Sodré — Sociedade Incivil", q:"O que Sodré chama de 'simulacro de participação na conexão'? Por que a hiperconexão digital não garante comunicação real? Qual a diferença entre conexão/informação e comunicação?"},
+  {tag:"Sodré — Sociedade Incivil", q:"O que significa dizer que a fala nas redes sociais é 'intransitiva'? Relacione com a diferença entre transmissão de dados e comunicação autêntica segundo Sodré."},
+  {tag:"Sodré — Sociedade Incivil", q:"Para Sodré, o que caracteriza uma 'sociedade incivil'? Qual o papel da linguagem (ou da sua degradação) na formação desse tipo de sociedade?"},
+  {tag:"Sodré — Sociedade Incivil", q:"Como Sodré analisa o fenômeno das 'bolhas digitais' e das câmaras de eco nas redes sociais? Por que elas representam o oposto do diálogo autêntico?"},
+  {tag:"Sodré — Sociedade Incivil", q:"Segundo Sodré, qual é a diferença entre informação e comunicação? Por que o aumento exponencial de informações não significa mais comunicação entre as pessoas?"},
+  {tag:"Sodré — Sociedade Incivil", q:"Explique o conceito de 'bios midiático' proposto por Sodré. Como esse conceito descreve a relação entre mídia, tecnologia e formas de vida contemporâneas?"},
+  {tag:"Sodré — Sociedade Incivil", q:"Como Sodré relaciona a violência simbólica das redes sociais com a degradação da linguagem? De que forma o discurso de ódio online pode ser analisado a partir das categorias do autor?"},
+
+  // ─── LINGUAGEM E CULTURA (10 questões) ───
+  {tag:"Linguagem e Cultura", q:"Por que a linguagem e o contexto cultural são inseparáveis? Como o contexto histórico, geográfico e sociocultural interfere na produção de sentido? Relacione com os conceitos de variação linguística."},
+  {tag:"Linguagem e Cultura", q:"Quais são os três tipos de variação linguística estudados (histórica/diacrônica, geográfica/diatópica e sociocultural/diastrática)? Defina cada um e dê um exemplo concreto para cada tipo."},
+  {tag:"Linguagem e Cultura", q:"Quais são os cinco níveis de fala (registros linguísticos)? Explique cada um deles com um exemplo e explique por que não existe 'falar errado', apenas falar 'linguisticamente correto' ou não para aquele contexto."},
+  {tag:"Linguagem e Cultura", q:"O que é 'barreira cultural' na comunicação? Dê um exemplo de como diferenças culturais podem gerar mal-entendidos mesmo quando dois falantes dominam a mesma língua."},
+  {tag:"Linguagem e Cultura", q:"Como o gênero, a classe social e a raça influenciam o modo como as pessoas são recebidas quando falam? Relacione com os conceitos de variação diastrática e preconceito linguístico."},
+  {tag:"Linguagem e Cultura", q:"O que é 'preconceito linguístico' segundo os estudiosos da disciplina? Como ele se manifesta na prática e que consequências sociais e psicológicas pode ter?"},
+  {tag:"Linguagem e Cultura", q:"Como a digitalização da comunicação transformou os registros linguísticos? O uso de gírias, abreviações e emojis nos chats pode ser considerado um registro linguístico legítimo? Justifique com base nos conceitos estudados."},
+  {tag:"Linguagem e Cultura", q:"Explique o que é 'adequação linguística'. Por que saber adaptar o registro ao contexto é uma competência comunicativa tão importante quanto conhecer a norma culta?"},
+  {tag:"Linguagem e Cultura", q:"Como as línguas mudam ao longo do tempo (variação diacrônica)? Por que tentar 'congelar' uma língua em uma forma fixa é impossível e contrário à natureza da linguagem humana?"},
+  {tag:"Linguagem e Cultura", q:"O que é 'norma culta' e qual é o seu papel social? Por que a escola tem histórica e socialmente privilegiado a norma culta, e quais são as críticas a essa posição?"},
+
+
+];
+
+const THEMES = [...new Set(ALL_QUESTIONS.map(q => q.tag))];
+const THEME_COUNTS = {};
+THEMES.forEach(t => { THEME_COUNTS[t] = ALL_QUESTIONS.filter(q => q.tag === t).length; });
+
+// ====== STATE ======
+let selectedMode = 'aleatorio';
+let selectedTheme = null;
+let selectedQty = 5;
+let sessionQuestions = [];
+let current = 0;
+let answers = [];
+let feedbacks = [];
+let teachings = [];
+let done = [];
+
+// ====== SETUP UI ======
+function buildThemeGrid() {
+  const grid = document.getElementById('theme-grid');
+  grid.innerHTML = '';
+  THEMES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'theme-btn' + (selectedTheme === t ? ' selected' : '');
+    btn.onclick = () => setTheme(t);
+    btn.innerHTML = `<div class="theme-dot"></div><span>${t}</span><span class="theme-count">${THEME_COUNTS[t]} questões</span>`;
+    grid.appendChild(btn);
+  });
+}
+
+function setMode(mode) {
+  selectedMode = mode;
+  ['aleatorio','tema','todos'].forEach(m => {
+    document.getElementById('mode-' + m).classList.toggle('selected', m === mode);
+  });
+  const thSel = document.getElementById('theme-selector');
+  if (mode === 'tema') {
+    thSel.style.display = 'block';
+    buildThemeGrid();
+    if (!selectedTheme) selectedTheme = THEMES[0];
+    buildThemeGrid();
+  } else {
+    thSel.style.display = 'none';
+    selectedTheme = null;
+  }
+  updateQtyOptions();
+}
+
+function setTheme(t) {
+  selectedTheme = t;
+  buildThemeGrid();
+  updateQtyOptions();
+}
+
+function setQty(n) {
+  selectedQty = n;
+  ['5','10','15','20','all'].forEach(v => {
+    const el = document.getElementById('qty-' + v);
+    if (el) el.classList.toggle('selected', v === String(n));
+  });
+}
+
+function updateQtyOptions() {
+  let maxQ;
+  if (selectedMode === 'todos') {
+    maxQ = ALL_QUESTIONS.length;
+  } else if (selectedMode === 'tema' && selectedTheme) {
+    maxQ = THEME_COUNTS[selectedTheme];
+  } else {
+    maxQ = ALL_QUESTIONS.length;
+  }
+
+  ['5','10','15','20'].forEach(v => {
+    const el = document.getElementById('qty-' + v);
+    if (el) {
+      el.style.display = parseInt(v) <= maxQ ? '' : 'none';
+      if (parseInt(v) > maxQ && selectedQty === parseInt(v)) setQty('all');
+    }
+  });
+}
+
+function startQuiz() {
+  let pool;
+  if (selectedMode === 'todos') {
+    pool = [...ALL_QUESTIONS];
+  } else if (selectedMode === 'tema') {
+    pool = ALL_QUESTIONS.filter(q => q.tag === selectedTheme);
+  } else {
+    // aleatorio
+    pool = [...ALL_QUESTIONS].sort(() => Math.random() - 0.5);
+  }
+
+  if (selectedQty !== 'all') {
+    pool = pool.slice(0, selectedQty);
+  }
+
+  sessionQuestions = pool;
+  answers = Array(pool.length).fill('');
+  feedbacks = Array(pool.length).fill('');
+  teachings = Array(pool.length).fill('');
+  done = Array(pool.length).fill(false);
+  current = 0;
+
+  const modeBadge = document.getElementById('sidebar-mode-badge');
+  if (selectedMode === 'aleatorio') modeBadge.textContent = '🎲 Aleatório';
+  else if (selectedMode === 'tema') modeBadge.textContent = '🎯 ' + selectedTheme;
+  else modeBadge.textContent = '📚 Todos os temas';
+
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('completion-div').style.display = 'none';
+
+  render();
+}
+
+function goSetup() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('setup-screen').style.display = 'flex';
+}
+
+// ====== QUIZ ======
+function buildSidebar() {
+  const list = document.getElementById('q-list');
+  list.innerHTML = '';
+  sessionQuestions.forEach((q, i) => {
+    const item = document.createElement('div');
+    item.className = 'q-item' + (i === current ? ' active' : '') + (done[i] ? ' done' : '');
+    item.innerHTML = `<div class="q-num">${i+1}</div><div class="q-label">${q.tag}</div>`;
+    item.onclick = () => { current = i; closeSidebar(); render(); };
+    list.appendChild(item);
+  });
+}
+
+function render() {
+  const allDone = done.every(Boolean);
+  if (allDone && sessionQuestions.length > 0) {
+    document.getElementById('completion-div').style.display = 'block';
+    document.getElementById('completion-sub').textContent =
+      `Você respondeu ${done.filter(Boolean).length} de ${sessionQuestions.length} questões!`;
+  }
+
+  const q = sessionQuestions[current];
+  if (!q) return;
+
+  document.getElementById('q-tag').textContent = q.tag;
+  document.getElementById('q-num').textContent = `Questão ${current+1} de ${sessionQuestions.length}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-answer').value = answers[current];
+  document.getElementById('nav-info').textContent = done[current] ? '✓ Respondida' : '';
+  document.getElementById('mobile-q-info').textContent = `Questão ${current+1} de ${sessionQuestions.length}`;
+
+  const fb = document.getElementById('feedback-div');
+  if (feedbacks[current]) {
+    document.getElementById('feedback-text').textContent = feedbacks[current];
+    fb.style.display = 'block';
+  } else {
+    fb.style.display = 'none';
+  }
+
+  const td = document.getElementById('teaching-div');
+  const banner = document.getElementById('after-teach-banner');
+  if (teachings[current]) {
+    document.getElementById('teaching-text').textContent = teachings[current];
+    td.style.display = 'block';
+    banner.style.display = feedbacks[current] ? 'none' : 'block';
+  } else {
+    td.style.display = 'none';
+    banner.style.display = 'none';
+  }
+
+  document.getElementById('loading-div').style.display = 'none';
+  document.getElementById('btn-corrigir').disabled = false;
+  document.getElementById('btn-teach').disabled = false;
+
+  const total = done.filter(Boolean).length;
+  document.getElementById('prog-fill').style.width = (total / sessionQuestions.length * 100) + '%';
+  document.getElementById('prog-count').textContent = total + ' / ' + sessionQuestions.length;
+  document.getElementById('mobile-prog').textContent = total + '/' + sessionQuestions.length;
+
+  document.getElementById('q-answer').oninput = () => {
+    answers[current] = document.getElementById('q-answer').value;
+  };
+
+  buildSidebar();
+  document.getElementById('main-content').scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function ensinar() {
+  document.getElementById('btn-teach').disabled = true;
+  document.getElementById('btn-corrigir').disabled = true;
+  document.getElementById('loading-div').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = 'Preparando explicação com analogias...';
+  document.getElementById('teaching-div').style.display = 'none';
+  document.getElementById('after-teach-banner').style.display = 'none';
+
+  const q = sessionQuestions[current];
+  const prompt = `Você é um professor didático e criativo da disciplina Linguagem, Sujeito e Tecnologia da UTFPR, curso de Sistemas de Informação. A professora real da disciplina é Larissa Rizzi Varela.
+
+Um aluno não conseguiu responder a seguinte questão e pediu ajuda para entender o conteúdo:
+
+QUESTÃO: ${q.q}
+
+Explique o conteúdo necessário para responder essa questão de forma didática, seguindo esta estrutura:
+
+🧩 A IDEIA CENTRAL: (explique o conceito principal em 2-3 frases simples)
+
+🎯 ANALOGIA: (crie uma analogia criativa do cotidiano, de preferência usando exemplos de tecnologia, games, redes sociais ou situações do dia a dia de um jovem universitário, para tornar o conceito concreto e memorável)
+
+📖 OS AUTORES DIZEM: (explique o que os autores da disciplina — Chauí, Althusser, Sodré, Possenti, Brandão — falam sobre isso, de forma clara)
+
+🔑 PALAVRAS-CHAVE: (liste os termos técnicos que devem aparecer na resposta)
+
+Seja acessível, empolgante e pedagógico. Use linguagem próxima de quem está no início da graduação. Responda em português.`;
+
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + GROQ_KEY },
+      body: JSON.stringify({ model: MODEL, max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || "Erro ao obter explicação.";
+    teachings[current] = text;
+    document.getElementById('teaching-text').textContent = text;
+    document.getElementById('teaching-div').style.display = 'block';
+    document.getElementById('after-teach-banner').style.display = 'block';
+  } catch (e) {
+    teachings[current] = "Erro de conexão: " + e.message;
+    document.getElementById('teaching-text').textContent = teachings[current];
+    document.getElementById('teaching-div').style.display = 'block';
+  }
+
+  document.getElementById('loading-div').style.display = 'none';
+  document.getElementById('btn-teach').disabled = false;
+  document.getElementById('btn-corrigir').disabled = false;
+}
+
+async function corrigir() {
+  const ans = document.getElementById('q-answer').value.trim();
+  if (!ans) { alert("Escreva sua resposta antes de corrigir."); return; }
+  answers[current] = ans;
+
+  document.getElementById('btn-corrigir').disabled = true;
+  document.getElementById('loading-div').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = 'Analisando sua resposta...';
+  document.getElementById('feedback-div').style.display = 'none';
+
+  const q = sessionQuestions[current];
+  const prompt = `Você é um professor universitário da disciplina Linguagem, Sujeito e Tecnologia da UTFPR Francisco Beltrão, curso de Sistemas de Informação. A professora é Larissa Rizzi Varela.
+
+Os conteúdos da disciplina incluem: A linguagem segundo Marilena Chauí (Convite à Filosofia, Cap. 4), Discurso e Ideologia (Possenti, Brandão, Althusser, Marx), Muniz Sodré e A Sociedade Incivil, Linguagem e Contextos Culturais (variações linguísticas, níveis de fala, barreiras culturais), Positivismo Lógico e a linguagem computacional.
+
+Corrija a seguinte resposta discursiva de um estudante.
+
+QUESTÃO: ${q.q}
+
+RESPOSTA DO ALUNO: ${ans}
+
+Estruture sua correção assim:
+📊 AVALIAÇÃO GERAL: (breve avaliação em 1-2 frases)
+
+✅ O QUE ACERTOU: (pontos positivos da resposta)
+
+⚠️ O QUE FALTOU OU PRECISA MELHORAR: (lacunas, imprecisões ou erros)
+
+📚 RESPOSTA COMPLETA E IDEAL: (a resposta que um bom aluno daria, com os conceitos corretos e autores citados quando pertinente)
+
+Seja pedagógico, construtivo e use linguagem acessível. Responda em português.`;
+
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + GROQ_KEY },
+      body: JSON.stringify({ model: MODEL, max_tokens: 1200, messages: [{ role: "user", content: prompt }] })
+    });
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || "Erro ao obter resposta da IA.";
+    feedbacks[current] = text;
+    done[current] = true;
+    document.getElementById('feedback-text').textContent = text;
+    document.getElementById('feedback-div').style.display = 'block';
+    document.getElementById('after-teach-banner').style.display = 'none';
+  } catch (e) {
+    feedbacks[current] = "Erro de conexão: " + e.message;
+    document.getElementById('feedback-text').textContent = feedbacks[current];
+    document.getElementById('feedback-div').style.display = 'block';
+  }
+
+  document.getElementById('loading-div').style.display = 'none';
+  document.getElementById('btn-corrigir').disabled = false;
+  done[current] = true;
+  const total = done.filter(Boolean).length;
+  document.getElementById('prog-fill').style.width = (total / sessionQuestions.length * 100) + '%';
+  document.getElementById('prog-count').textContent = total + ' / ' + sessionQuestions.length;
+  document.getElementById('mobile-prog').textContent = total + '/' + sessionQuestions.length;
+  document.getElementById('nav-info').textContent = '✓ Respondida';
+  buildSidebar();
+}
+
+function pular() { navQ(1); }
+function navQ(dir) {
+  current = Math.max(0, Math.min(sessionQuestions.length - 1, current + dir));
+  render();
+}
+
+// ====== MOBILE SIDEBAR ======
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const hamBtn = document.getElementById('ham-btn');
+  const isOpen = sidebar.classList.contains('mobile-open');
+  if (isOpen) {
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('open');
+    hamBtn.classList.remove('open');
+  } else {
+    sidebar.classList.add('mobile-open');
+    overlay.classList.add('open');
+    hamBtn.classList.add('open');
+  }
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  document.getElementById('ham-btn').classList.remove('open');
+}
+
+// Init setup
+setMode('aleatorio');
+setQty(5);
+</script>
+</body>
+</html>
